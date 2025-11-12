@@ -1,0 +1,65 @@
+[
+  {
+    "user_id": "2cb2bce1-dc79-431d-b88e-a930a052f4f0",
+    "username": "111",
+    "password": "111",
+    "email": "111",
+    "role": "customer",
+    "shipping_address": "111",
+    "phone_number": "111"
+  },
+  {
+    "user_id": "ebd21642-733b-4a34-9951-f6fd810eff89",
+    "username": "222",
+    "password": "222",
+    "email": "222",
+    "role": "merchant",
+    "shop_name": "222",
+    "contact_info": "222"
+  },
+  {
+    "user_id": "8fc3e874-02a3-436c-bd99-1a97c3378766",
+    "username": "test_merchant",
+    "password": "test123",
+    "email": "test_merchant@example.com",
+    "role": "merchant",
+    "shop_name": "测试商店",
+    "contact_info": "测试联系方式"
+  },
+  {
+    "user_id": "2593f22e-8ba6-48df-b211-db669fd19045",
+    "username": "test_customer",
+    "password": "test123",
+    "email": "test_customer@example.com",
+    "role": "customer",
+    "shipping_address": "测试地址",
+    "phone_number": "13800138000"
+  },
+  {
+    "user_id": "c04c2df4-d17d-420a-98bb-651373e1e094",
+    "username": "test_purchase_merchant",
+    "password": "test123",
+    "email": "test_merchant@example.com",
+    "role": "merchant",
+    "shop_name": "测试购买商店",
+    "contact_info": "测试联系方式"
+  },
+  {
+    "user_id": "0eebff4f-6cb1-4b06-b230-4ab6cce9cfe7",
+    "username": "purchase_test_customer",
+    "password": "test123",
+    "email": "test_customer@example.com",
+    "role": "customer",
+    "shipping_address": "测试地址",
+    "phone_number": "13800138000"
+  },
+  {
+    "user_id": "455c2437-3fb6-467e-af4d-8d606a52ce82",
+    "username": "purchase_test_merchant",
+    "password": "test123",
+    "email": "test_merchant@example.com",
+    "role": "merchant",
+    "shop_name": "测试商店",
+    "contact_info": "测试联系方式"
+  }
+]

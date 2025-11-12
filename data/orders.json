@@ -1,0 +1,20 @@
+[
+  {
+    "order_id": "0d2cfa02-0837-459c-bdc4-00bfdda5136a",
+    "order_date": "2025-11-12 22:58:06",
+    "customer_id": "2cb2bce1-dc79-431d-b88e-a930a052f4f0",
+    "product_id": "1ae4ced9-be95-456f-996e-4d9d5929cb8d",
+    "quantity": 2,
+    "status": "accepted",
+    "total_amount": 4.0
+  },
+  {
+    "order_id": "071c197b-6d63-4349-8f77-fa16632bf7ab",
+    "order_date": "2025-11-12 23:03:37",
+    "customer_id": "2cb2bce1-dc79-431d-b88e-a930a052f4f0",
+    "product_id": "1ae4ced9-be95-456f-996e-4d9d5929cb8d",
+    "quantity": 3,
+    "status": "pending",
+    "total_amount": 6.0
+  }
+]
