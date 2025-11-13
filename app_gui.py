@@ -533,7 +533,20 @@ class OnlineMallGUI:
         button_frame.pack(fill=tk.X, padx=20, pady=20)
         
         ttk.Button(button_frame, text="更新商品信息", command=lambda: self.update_product_dialog(product)).pack(side=tk.LEFT, padx=10)
-        ttk.Button(button_frame, text="补充库存", command=lambda: self.restock_dialog(product)).pack(side=tk.LEFT, padx=10)
+        
+        def restock_and_refresh():
+            self.restock_dialog(product)
+            # 刷新商品信息显示
+            # 重新获取商品信息
+            refreshed_product = self.product_manager.get_product(product.product_id)
+            if refreshed_product:
+                # 更新库存标签
+                for widget in info_frame.winfo_children():
+                    if isinstance(widget, ttk.Label) and widget.cget("text").startswith("库存:"):
+                        widget.config(text=f"库存: {refreshed_product.stock_quantity}")
+                        break
+        
+        ttk.Button(button_frame, text="补充库存", command=restock_and_refresh).pack(side=tk.LEFT, padx=10)
         status_text = "下架" if product.is_active else "上架"
         ttk.Button(button_frame, text=f"{status_text}商品", command=lambda: self.toggle_product_status(product)).pack(side=tk.LEFT, padx=10)
     
@@ -585,7 +598,7 @@ class OnlineMallGUI:
     
     def restock_dialog(self, product):
         """补充库存对话框"""
-        quantity = simpledialog.askinteger("补充库存", f"请输入要补充的库存数量 (当前库存: {product.stock}):", minvalue=1)
+        quantity = simpledialog.askinteger("补充库存", f"请输入要补充的库存数量 (当前库存: {product.stock_quantity}):", minvalue=1)
         if quantity is not None:
             success, msg = self.product_manager.update_stock(product.product_id, quantity)
             messagebox.showinfo("补充结果", msg)
@@ -684,6 +697,31 @@ class OnlineMallGUI:
             ))
         
         tree.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+        
+        # 查看联系方式按钮
+        def view_contact():
+            selected = tree.selection()
+            if not selected:
+                messagebox.showwarning("警告", "请先选择一个订单")
+                return
+            
+            item = tree.item(selected[0])
+            order_id = item["values"][0]
+            order = self.order_manager.get_order(order_id)
+            
+            if order and order.status in ["accepted", "completed"]:
+                contact_info, msg = self.order_manager.exchange_contact_info(order_id)
+                if contact_info:
+                    messagebox.showinfo("顾客联系方式", f"顾客信息:\n用户名: {contact_info['customer']['name']}\n电话: {contact_info['customer']['phone']}\n地址: {contact_info['customer']['address']}\n\n您的联系方式:\n用户名: {contact_info['merchant']['name']}\n店铺: {contact_info['merchant']['shop']}\n联系方式: {contact_info['merchant']['contact']}")
+                else:
+                    messagebox.showerror("错误", msg)
+            else:
+                messagebox.showinfo("提示", "只有已接受或已完成的订单才能查看联系方式")
+        
+        button_frame = ttk.Frame(dialog)
+        button_frame.pack(fill=tk.X, padx=20, pady=10)
+        
+        ttk.Button(button_frame, text="查看顾客联系方式", command=view_contact).pack(side=tk.LEFT, padx=10)
     
     def process_merchant_order(self):
         """处理商家订单"""
@@ -1060,14 +1098,14 @@ class OnlineMallGUI:
             order_id = item["values"][0]
             order = self.order_manager.get_order(order_id)
             
-            if order and order.status == "accepted":
-                contact_info = self.order_manager.exchange_contact_info(order_id)
+            if order and order.status in ["accepted", "completed"]:
+                contact_info, msg = self.order_manager.exchange_contact_info(order_id)
                 if contact_info:
-                    messagebox.showinfo("联系方式", f"您的联系方式: {contact_info['customer']}\n\n商家联系方式: {contact_info['merchant']}")
+                    messagebox.showinfo("联系方式", f"您的联系方式:\n用户名: {contact_info['customer']['name']}\n电话: {contact_info['customer']['phone']}\n地址: {contact_info['customer']['address']}\n\n商家联系方式:\n用户名: {contact_info['merchant']['name']}\n店铺: {contact_info['merchant']['shop']}\n联系方式: {contact_info['merchant']['contact']}")
                 else:
-                    messagebox.showerror("错误", "获取联系方式失败")
+                    messagebox.showerror("错误", msg)
             else:
-                messagebox.showinfo("提示", "只有已接受的订单才能查看联系方式")
+                messagebox.showinfo("提示", "只有已接受或已完成的订单才能查看联系方式")
         
         # 确认收货按钮
         def confirm_receipt():

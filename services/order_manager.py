@@ -127,9 +127,9 @@ class OrderManager:
         if not order:
             return None, "订单不存在"
         
-        # 检查订单状态，只有已接受的订单才能交换联系方式
-        if order.status != "accepted":
-            return None, "只有已接受的订单才能交换联系方式"
+        # 检查订单状态，已接受或已完成的订单才能交换联系方式
+        if order.status not in ["accepted", "completed"]:
+            return None, "只有已接受或已完成的订单才能交换联系方式"
         
         # 获取顾客和商家信息
         customer = self.user_manager.get_user_by_id(order.customer_id)

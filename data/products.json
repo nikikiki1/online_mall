@@ -2,9 +2,9 @@
   {
     "product_id": "1ae4ced9-be95-456f-996e-4d9d5929cb8d",
     "name": "纸",
-    "description": "纸",
+    "description": "纸，纸",
     "price": 2.0,
-    "stock_quantity": 295,
+    "stock_quantity": 377,
     "merchant_id": "ebd21642-733b-4a34-9951-f6fd810eff89",
     "is_active": true
   }
