@@ -3,9 +3,9 @@ name: Online Mall CI/CD Pipeline
 # 触发条件：代码推送到main分支或有人向main分支发起Pull Request时触发
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 # 工作流中的任务定义
 jobs:
