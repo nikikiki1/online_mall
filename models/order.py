@@ -1,86 +1,140 @@
-from datetime import datetime
 import uuid
+from datetime import datetime
+from typing import Optional, Union
+from models.product import Product
+from services.product_manager import ProductManager
 
 
 class Order:
-    def __init__(self, customer_id, product_id, quantity, product_manager):
-        self._order_id = str(uuid.uuid4())
-        self._customer_id = customer_id
-        self._product_id = product_id
-        self._quantity = quantity
-        self._order_date = datetime.now()
-        self._status = "pending"  # pending, accepted, completed, cancelled
+    def __init__(self, customer_id: str, product_id: str, quantity: int, product_manager: Optional[ProductManager] = None):
+        self._order_id: str = str(uuid.uuid4())
+        self._customer_id: str = customer_id
+        self._product_id: str = product_id
+        self._quantity: int = quantity
+        self._order_date: datetime = datetime.now()
+        self._status: str = "pending"  # pending, accepted, completed, cancelled
         
         # 获取商品信息以计算总金额和商家ID
-        product = product_manager.get_product(product_id)
-        self._merchant_id = product.merchant_id if product else None
-        self._total_amount = product.price * quantity if product else 0
+        self._product_manager = product_manager
+        self._initial_product_price: float = 0.0  # 存储订单创建时的价格
         
-        # 关联商品信息（简化版）
-        self._product_name = product.name if product else "未知商品"
-        self._product_price = product.price if product else 0
+        # 如果有ProductManager，验证商品存在并获取初始价格
+        if product_manager:
+            product = product_manager.get_product(product_id)
+            if product:
+                self._merchant_id = product.merchant_id
+                self._initial_product_price = product.price
+                self._total_amount = self._initial_product_price * quantity
+            else:
+                self._merchant_id = None
+                self._total_amount = 0.0
+        else:
+            self._merchant_id = None
+            self._total_amount = 0.0
     
     @property
-    def order_id(self):
+    def order_id(self) -> str:
         return self._order_id
     
     @property
-    def customer_id(self):
+    def customer_id(self) -> str:
         return self._customer_id
     
     @property
-    def merchant_id(self):
+    def merchant_id(self) -> Optional[str]:
         return self._merchant_id
     
     @property
-    def product_id(self):
+    def product_id(self) -> str:
         return self._product_id
     
     @property
-    def quantity(self):
+    def quantity(self) -> int:
         return self._quantity
     
     @property
-    def total_amount(self):
+    def total_amount(self) -> float:
         return self._total_amount
     
     @property
-    def status(self):
+    def status(self) -> str:
         return self._status
     
     @property
-    def price(self):
-        return self._product_price
+    def product_name(self) -> str:
+        """动态获取商品名称"""
+        if self._product_manager:
+            product = self._product_manager.get_product(self._product_id)
+            return product.name if product else "未知商品"
+        return "未知商品"
     
     @property
-    def order_date(self):
+    def product_price(self) -> float:
+        """动态获取商品价格"""
+        if self._product_manager:
+            product = self._product_manager.get_product(self._product_id)
+            return product.price if product else 0.0
+        return 0.0
+    
+    def refresh_product_info(self) -> None:
+        """刷新商品信息"""
+        if self._product_manager:
+            product = self._product_manager.get_product(self._product_id)
+            if product:
+                self._merchant_id = product.merchant_id
+    
+    @property
+    def price(self) -> float:
+        """动态获取商品价格"""
+        if self._product_manager:
+            product = self._product_manager.get_product(self._product_id)
+            return product.price if product else 0.0
+        return 0.0
+    
+    @property
+    def order_date(self) -> datetime:
         return self._order_date
     
-    def calculate_total(self):
+    def calculate_total(self) -> float:
         """计算订单总金额"""
         return self._total_amount
     
-    def update_status(self, new_status):
+    def update_status(self, new_status: str) -> bool:
         """更新订单状态"""
-        valid_statuses = ["pending", "accepted", "completed", "cancelled"]
-        if new_status in valid_statuses:
+        valid_transitions = {
+            "pending": ["accepted", "cancelled", "rejected"],
+            "accepted": ["completed"],
+            "completed": [],
+            "cancelled": [],
+            "rejected": []
+        }
+        
+        if new_status not in ["pending", "accepted", "completed", "cancelled", "rejected"]:
+            return False
+        
+        if new_status in valid_transitions.get(self._status, []):
             self._status = new_status
             return True
+        
         return False
     
-    def complete(self):
+    def complete(self) -> bool:
         """标记订单完成"""
         return self.update_status("completed")
     
-    def cancel(self):
+    def cancel(self) -> bool:
         """取消订单"""
         return self.update_status("cancelled")
     
-    def accept(self):
+    def reject(self) -> bool:
+        """拒绝订单"""
+        return self.update_status("rejected")
+    
+    def accept(self) -> bool:
         """接受订单"""
         return self.update_status("accepted")
     
-    def __str__(self):
+    def __str__(self) -> str:
         status_map = {
             "pending": "待处理",
             "accepted": "已接单",

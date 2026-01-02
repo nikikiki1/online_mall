@@ -2,18 +2,22 @@ import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
 import json
 import os
+from typing import Dict, Optional, Any, Union, List
 from services.user_manager import UserManager
 from services.product_manager import ProductManager
 from services.order_manager import OrderManager
+from models.user import User, Merchant, Customer
+from models.product import Product
+from models.order import Order
 
 class OnlineMallGUI:
-    def __init__(self, root):
-        self.root = root
+    def __init__(self, root: tk.Tk) -> None:
+        self.root: tk.Tk = root
         self.root.title("网络商场系统")
         self.root.geometry("800x600")
         
         # 定义主题颜色
-        self.themes = {
+        self.themes: Dict[str, Dict[str, str]] = {
             "light": {
                 "background": "#f0f0f0",
                 "foreground": "#000000",
@@ -37,10 +41,10 @@ class OnlineMallGUI:
         }
         
         # 当前主题模式
-        self.theme_mode = "light"
+        self.theme_mode: str = "light"
         
         # 设置中文字体和初始主题
-        self.style = ttk.Style()
+        self.style: ttk.Style = ttk.Style()
         self.set_theme(self.theme_mode)
         
         # 配置自定义样式
@@ -63,25 +67,28 @@ class OnlineMallGUI:
         )
         
         # 初始化各管理器
-        self.user_manager = UserManager()
-        self.product_manager = ProductManager()
-        self.order_manager = OrderManager(self.product_manager, self.user_manager)
-        self.current_user = None
+        self.user_manager: UserManager = UserManager()
+        self.product_manager: ProductManager = ProductManager()
+        self.order_manager: OrderManager = OrderManager(self.product_manager, self.user_manager)
+        self.current_user: Optional[User] = None
         
+
+
+
         # 创建主容器
-        self.main_frame = ttk.Frame(root)
+        self.main_frame: ttk.Frame = ttk.Frame(root)
         self.apply_theme_to_widget(self.main_frame)
         self.main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
         
         # 显示登录注册界面
         self.show_login_register_screen()
     
-    def clear_frame(self):
+    def clear_frame(self) -> None:
         """清空当前框架中的所有组件"""
         for widget in self.main_frame.winfo_children():
             widget.destroy()
     
-    def set_theme(self, theme_mode):
+    def set_theme(self, theme_mode: str) -> None:
         """设置主题"""
         self.theme_mode = theme_mode
         theme = self.themes[theme_mode]
@@ -132,7 +139,7 @@ class OnlineMallGUI:
         if hasattr(self, 'main_frame'):
             self.apply_theme_to_widget(self.main_frame)
     
-    def apply_theme_to_widget(self, widget):
+    def apply_theme_to_widget(self, widget: Union[tk.Widget, ttk.Widget]) -> None:
         """递归应用主题到所有组件"""
         theme = self.themes[self.theme_mode]
         
@@ -146,19 +153,22 @@ class OnlineMallGUI:
         
         # 设置当前组件的背景和前景色
         try:
-            widget.configure(bg=theme["background"])
+            widget.configure(bg=theme["background"])  # type: ignore[call-arg]
         except:
             pass
         try:
-            widget.configure(background=theme["background"])
+            widget.configure(background=theme["background"])  # type: ignore[call-arg]
         except:
             pass
         
         # 区分按钮和其他组件的文字颜色
         try:
             # 如果是按钮组件，使用button_fg
-            if isinstance(widget, (tk.Button, ttk.Button)):
+            if isinstance(widget, tk.Button):
                 widget.configure(fg=button_fg)
+            elif isinstance(widget, ttk.Button):
+                # ttk.Button不支持直接设置foreground，使用style代替
+                pass
             elif isinstance(widget, tk.Entry):
                 widget.configure(fg=entry_fg)
             else:
@@ -168,12 +178,14 @@ class OnlineMallGUI:
             
         try:
             # 如果是按钮组件，使用button_fg
-            if isinstance(widget, (tk.Button, ttk.Button)):
+            if isinstance(widget, tk.Button):
                 widget.configure(foreground=button_fg)
+            elif isinstance(widget, ttk.Button):
+                # ttk.Button使用样式而不是直接设置前景色
+                pass
             elif isinstance(widget, tk.Entry):
-                widget.configure(foreground=entry_fg)
                 widget.configure(bg=theme["entry_bg"])
-            else:
+            elif not isinstance(widget, ttk.Widget):  # 跳过ttk组件的直接foreground配置
                 widget.configure(foreground=theme["foreground"])
         except:
             pass
@@ -182,13 +194,17 @@ class OnlineMallGUI:
         for child in widget.winfo_children():
             self.apply_theme_to_widget(child)
     
-    def toggle_theme(self):
+
+
+
+
+    def toggle_theme(self) -> None:
         """切换主题模式"""
         new_theme = "dark" if self.theme_mode == "light" else "light"
         self.set_theme(new_theme)
         messagebox.showinfo("主题切换", f"已切换至{'白天' if new_theme == 'light' else '夜晚'}模式")
     
-    def show_login_register_screen(self):
+    def show_login_register_screen(self) -> None:
         """显示登录注册界面"""
         self.clear_frame()
         
@@ -233,7 +249,7 @@ class OnlineMallGUI:
         exit_button = ttk.Button(self.main_frame, text="退出系统", command=self.root.quit)
         exit_button.pack(pady=20)
     
-    def register_dialog(self, role):
+    def register_dialog(self, role: str) -> None:
         """注册对话框"""
         dialog = tk.Toplevel(self.root)
         dialog.title("用户注册" + ("(顾客)" if role == "customer" else "(商家)"))
@@ -278,7 +294,7 @@ class OnlineMallGUI:
             contact_entry = ttk.Entry(dialog, width=25)
             contact_entry.grid(row=4, column=1, padx=10, pady=10)
         
-        def submit():
+        def submit() -> None:
             username = username_entry.get().strip()
             password = password_entry.get().strip()
             email = email_entry.get().strip()
@@ -313,7 +329,7 @@ class OnlineMallGUI:
         submit_button = ttk.Button(dialog, text="注册", command=submit)
         submit_button.grid(row=5, column=1, padx=10, pady=20, sticky=tk.E)
     
-    def login(self):
+    def login(self) -> None:
         """用户登录"""
         username = self.login_username.get().strip()
         password = self.login_password.get().strip()
@@ -329,7 +345,7 @@ class OnlineMallGUI:
         else:
             messagebox.showerror("登录失败", msg)
     
-    def show_main_menu(self):
+    def show_main_menu(self) -> None:
         """显示主菜单"""
         self.clear_frame()
         
@@ -342,26 +358,28 @@ class OnlineMallGUI:
         theme_button.pack(side=tk.RIGHT, padx=10)
         
         # 欢迎信息
-        welcome_label = ttk.Label(self.main_frame, text=f"欢迎回来，{self.current_user.username}！", style="Header.TLabel")
-        welcome_label.pack(pady=20)
-        
-        role_label = ttk.Label(self.main_frame, text=f"角色：{self.current_user.role}")
-        role_label.pack(pady=5)
+        if self.current_user:
+            welcome_label = ttk.Label(self.main_frame, text=f"欢迎回来，{self.current_user.username}！", style="Header.TLabel")
+            welcome_label.pack(pady=20)
+            
+            role_label = ttk.Label(self.main_frame, text=f"角色：{self.current_user.role}")
+            role_label.pack(pady=5)
         
         # 功能按钮区域
         button_frame = ttk.Frame(self.main_frame)
         button_frame.pack(fill=tk.X, pady=20)
         
-        if self.current_user.role == 'merchant':
-            self.show_merchant_buttons(button_frame)
-        else:
-            self.show_customer_buttons(button_frame)
+        if self.current_user:
+            if self.current_user.role == 'merchant':
+                self.show_merchant_buttons(button_frame)
+            else:
+                self.show_customer_buttons(button_frame)
         
         # 退出登录按钮
         logout_button = ttk.Button(self.main_frame, text="退出登录", command=self.logout)
         logout_button.pack(pady=20)
     
-    def show_merchant_buttons(self, parent):
+    def show_merchant_buttons(self, parent: ttk.Frame) -> None:
         """显示商家功能按钮"""
         buttons = [
             ("添加商品", self.add_product_dialog),
@@ -375,7 +393,7 @@ class OnlineMallGUI:
             button = ttk.Button(parent, text=text, command=command, width=15)
             button.pack(side=tk.LEFT, padx=10, pady=10)
     
-    def show_customer_buttons(self, parent):
+    def show_customer_buttons(self, parent: ttk.Frame) -> None:
         """显示顾客功能按钮"""
         buttons = [
             ("浏览商品", self.browse_products),
@@ -389,7 +407,7 @@ class OnlineMallGUI:
             button = ttk.Button(parent, text=text, command=command, width=15)
             button.pack(side=tk.LEFT, padx=10, pady=10)
     
-    def logout(self):
+    def logout(self) -> None:
         """用户登出"""
         if self.current_user:
             self.current_user.logout()
@@ -397,7 +415,7 @@ class OnlineMallGUI:
             self.show_login_register_screen()
     
     # 商家功能
-    def add_product_dialog(self):
+    def add_product_dialog(self) -> None:
         """添加商品对话框"""
         dialog = tk.Toplevel(self.root)
         dialog.title("添加商品")
@@ -425,7 +443,7 @@ class OnlineMallGUI:
         stock_entry = ttk.Entry(dialog, width=25)
         stock_entry.grid(row=3, column=1, padx=10, pady=10)
         
-        def submit():
+        def submit() -> None:
             name = name_entry.get().strip()
             description = description_text.get("1.0", tk.END).strip()
             price_text = price_entry.get().strip()
@@ -444,7 +462,8 @@ class OnlineMallGUI:
                 messagebox.showerror("添加失败", "价格必须是正数，库存必须是非负整数")
                 return
             
-            product, msg = self.current_user.add_product(self.product_manager, name, description, price, stock)
+            if self.current_user:
+                product, msg = self.current_user.add_product(self.product_manager, name, description, price, stock)
             messagebox.showinfo("添加结果", msg)
             if product:
                 dialog.destroy()
@@ -452,8 +471,10 @@ class OnlineMallGUI:
         submit_button = ttk.Button(dialog, text="添加", command=submit)
         submit_button.grid(row=4, column=1, padx=10, pady=20, sticky=tk.E)
     
-    def manage_products(self):
+    def manage_products(self) -> None:
         """管理商品"""
+        if self.current_user is None:
+            return
         products = self.current_user.manage_products(self.product_manager)
         
         if not products:
@@ -491,29 +512,32 @@ class OnlineMallGUI:
         tree.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
         
         # 操作按钮
-        def on_select():
+        def on_select() -> None:
             selected = tree.selection()
             if not selected:
                 messagebox.showwarning("警告", "请先选择一个商品")
                 return
             
-            item = tree.item(selected[0])
-            product_id = item["values"][0]
+            item_data = tree.item(selected[0])
+            if item_data is None:
+                return
+            product_id = item_data["values"][0]
             product = self.product_manager.get_product(product_id)
             
             if product:
                 self.product_management_dialog(product)
                 # 刷新列表
                 for item in tree.get_children():
-                    tree.delete(item)
-                for p in self.current_user.manage_products(self.product_manager):
-                    status = "上架" if p.in_stock else "下架"
-                    tree.insert("", tk.END, values=(p.product_id, p.name, p.price, p.stock, status))
+                    tree.delete(str(item))
+                if self.current_user is not None:
+                    for p in self.current_user.manage_products(self.product_manager):
+                        status = "上架" if p.in_stock else "下架"
+                        tree.insert("", tk.END, values=(p.product_id, p.name, p.price, p.stock, status))
         
         action_button = ttk.Button(dialog, text="管理选中商品", command=on_select)
         action_button.pack(pady=10)
     
-    def product_management_dialog(self, product):
+    def product_management_dialog(self, product: Any) -> None:
         """商品管理对话框"""
         dialog = tk.Toplevel(self.root)
         dialog.title(f"管理商品: {product.name}")
@@ -534,7 +558,7 @@ class OnlineMallGUI:
         
         ttk.Button(button_frame, text="更新商品信息", command=lambda: self.update_product_dialog(product)).pack(side=tk.LEFT, padx=10)
         
-        def restock_and_refresh():
+        def restock_and_refresh() -> None:
             self.restock_dialog(product)
             # 刷新商品信息显示
             # 重新获取商品信息
@@ -550,7 +574,7 @@ class OnlineMallGUI:
         status_text = "下架" if product.is_active else "上架"
         ttk.Button(button_frame, text=f"{status_text}商品", command=lambda: self.toggle_product_status(product)).pack(side=tk.LEFT, padx=10)
     
-    def update_product_dialog(self, product):
+    def update_product_dialog(self, product: Any) -> None:
         """更新商品信息对话框"""
         dialog = tk.Toplevel(self.root)
         dialog.title(f"更新商品: {product.name}")
@@ -571,7 +595,7 @@ class OnlineMallGUI:
         price_entry.insert(0, str(product.price))
         price_entry.grid(row=2, column=1, padx=10, pady=10)
         
-        def submit():
+        def submit() -> None:
             name = name_entry.get().strip()
             description = description_text.get("1.0", tk.END).strip()
             price_text = price_entry.get().strip()
@@ -596,14 +620,14 @@ class OnlineMallGUI:
         submit_button = ttk.Button(dialog, text="更新", command=submit)
         submit_button.grid(row=3, column=1, padx=10, pady=20, sticky=tk.E)
     
-    def restock_dialog(self, product):
+    def restock_dialog(self, product: Any) -> None:
         """补充库存对话框"""
         quantity = simpledialog.askinteger("补充库存", f"请输入要补充的库存数量 (当前库存: {product.stock_quantity}):", minvalue=1)
         if quantity is not None:
             success, msg = self.product_manager.update_stock(product.product_id, quantity)
             messagebox.showinfo("补充结果", msg)
     
-    def toggle_product_status(self, product):
+    def toggle_product_status(self, product: Any) -> None:
         """切换商品上架/下架状态"""
         if product.is_active:
             success, msg = self.product_manager.toggle_product_status(product.product_id, activate=False)
@@ -611,8 +635,10 @@ class OnlineMallGUI:
             success, msg = self.product_manager.toggle_product_status(product.product_id, activate=True)
         messagebox.showinfo("操作结果", msg)
     
-    def view_merchant_orders(self):
+    def view_merchant_orders(self) -> None:
         """查看商家订单"""
+        if self.current_user is None:
+            return
         orders = self.order_manager.get_orders_by_merchant(self.current_user.user_id)
         
         if not orders:
@@ -699,13 +725,15 @@ class OnlineMallGUI:
         tree.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
         
         # 查看联系方式按钮
-        def view_contact():
+        def view_contact() -> None:
             selected = tree.selection()
             if not selected:
                 messagebox.showwarning("警告", "请先选择一个订单")
                 return
             
             item = tree.item(selected[0])
+            if item is None:
+                return
             order_id = item["values"][0]
             order = self.order_manager.get_order(order_id)
             
@@ -723,8 +751,10 @@ class OnlineMallGUI:
         
         ttk.Button(button_frame, text="查看顾客联系方式", command=view_contact).pack(side=tk.LEFT, padx=10)
     
-    def process_merchant_order(self):
+    def process_merchant_order(self) -> None:
         """处理商家订单"""
+        if self.current_user is None:
+            return
         orders = self.order_manager.get_orders_by_merchant(self.current_user.user_id)
         pending_orders = [o for o in orders if o.status == "pending"]
         
@@ -771,26 +801,30 @@ class OnlineMallGUI:
         tree.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
         
         # 操作按钮
-        def accept_order():
+        def accept_order() -> None:
             selected = tree.selection()
             if not selected:
                 messagebox.showwarning("警告", "请先选择一个订单")
                 return
             
             item = tree.item(selected[0])
+            if item is None:
+                return
             order_id = item["values"][0]
             success, msg = self.order_manager.process_order(order_id, "accept")
             messagebox.showinfo("操作结果", msg)
             if success:
                 dialog.destroy()
         
-        def cancel_order():
+        def cancel_order() -> None:
             selected = tree.selection()
             if not selected:
                 messagebox.showwarning("警告", "请先选择一个订单")
                 return
             
             item = tree.item(selected[0])
+            if item is None:
+                return
             order_id = item["values"][0]
             reason = simpledialog.askstring("取消订单", "请输入取消原因:")
             if reason is not None:
@@ -805,9 +839,11 @@ class OnlineMallGUI:
         ttk.Button(button_frame, text="接受订单", command=accept_order).pack(side=tk.LEFT, padx=20)
         ttk.Button(button_frame, text="取消订单", command=cancel_order).pack(side=tk.LEFT, padx=20)
     
-    def view_inventory(self):
+    def view_inventory(self) -> None:
         """查看库存"""
         # 直接使用product_manager的方法获取商家的商品
+        if self.current_user is None:
+            return
         products = self.product_manager.get_products_by_merchant(self.current_user.merchant_id)
         
         if not products:
@@ -839,10 +875,14 @@ class OnlineMallGUI:
         tree.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
     
     # 顾客功能
-    def browse_products(self):
+    def browse_products(self) -> None:
         """浏览商品"""
         products = self.product_manager.get_all_products()
         
+
+
+
+
         if not products:
             messagebox.showinfo("商品列表", "暂无商品")
             return
@@ -902,13 +942,15 @@ class OnlineMallGUI:
         tree.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
         
         # 购买按钮
-        def purchase():
+        def purchase() -> None:
             selected = tree.selection()
             if not selected:
                 messagebox.showwarning("警告", "请先选择一个商品")
                 return
             
             item = tree.item(selected[0])
+            if item is None:
+                return
             product_id = item["values"][0]
             product = self.product_manager.get_product(product_id)
             
@@ -918,7 +960,7 @@ class OnlineMallGUI:
         purchase_button = ttk.Button(dialog, text="购买选中商品", command=purchase)
         purchase_button.pack(pady=10)
     
-    def search_products_dialog(self):
+    def search_products_dialog(self) -> None:
         """搜索商品对话框"""
         dialog = tk.Toplevel(self.root)
         dialog.title("搜索商品")
@@ -928,7 +970,7 @@ class OnlineMallGUI:
         keyword_entry = ttk.Entry(dialog, width=25)
         keyword_entry.grid(row=0, column=1, padx=10, pady=20)
         
-        def search():
+        def search() -> None:
             keyword = keyword_entry.get().strip()
             if not keyword:
                 messagebox.showwarning("警告", "请输入搜索关键词")
@@ -972,13 +1014,15 @@ class OnlineMallGUI:
             tree.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
             
             # 购买按钮
-            def purchase_result():
+            def purchase_result() -> None:
                 selected = tree.selection()
                 if not selected:
                     messagebox.showwarning("警告", "请先选择一个商品")
                     return
                 
                 item = tree.item(selected[0])
+                if item is None:
+                    return
                 product_id = item["values"][0]
                 product = self.product_manager.get_product(product_id)
                 
@@ -996,7 +1040,7 @@ class OnlineMallGUI:
         search_button = ttk.Button(dialog, text="搜索", command=search)
         search_button.grid(row=1, column=1, padx=10, pady=20, sticky=tk.E)
     
-    def purchase_dialog(self, product):
+    def purchase_dialog(self, product: Any) -> None:
         """购买商品对话框"""
         dialog = tk.Toplevel(self.root)
         dialog.title(f"购买: {product.name}")
@@ -1022,12 +1066,18 @@ class OnlineMallGUI:
         ttk.Button(quantity_frame, text="+", command=lambda: quantity_var.set(min(product.stock_quantity, quantity_var.get() + 1))).pack(side=tk.LEFT, padx=5)
         
         # 确认购买
-        def confirm():
+        def confirm() -> None:
             quantity = quantity_var.get()
+
+
+
+
             if quantity > product.stock_quantity:
                 messagebox.showerror("购买失败", "库存不足")
                 return
             
+            if self.current_user is None:
+                return
             order, msg = self.order_manager.create_order(self.current_user.user_id, product.product_id, quantity)
             messagebox.showinfo("购买结果", msg)
             if order:
@@ -1035,8 +1085,10 @@ class OnlineMallGUI:
         
         ttk.Button(dialog, text="确认购买", command=confirm).pack(pady=30)
     
-    def view_customer_orders(self):
+    def view_customer_orders(self) -> None:
         """查看顾客订单"""
+        if self.current_user is None:
+            return
         orders = self.order_manager.get_orders_by_customer(self.current_user.user_id)
         
         if not orders:
@@ -1088,13 +1140,15 @@ class OnlineMallGUI:
         tree.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
         
         # 查看联系方式按钮
-        def view_contact():
+        def view_contact() -> None:
             selected = tree.selection()
             if not selected:
                 messagebox.showwarning("警告", "请先选择一个订单")
                 return
             
             item = tree.item(selected[0])
+            if item is None:
+                return
             order_id = item["values"][0]
             order = self.order_manager.get_order(order_id)
             
@@ -1108,13 +1162,15 @@ class OnlineMallGUI:
                 messagebox.showinfo("提示", "只有已接受或已完成的订单才能查看联系方式")
         
         # 确认收货按钮
-        def confirm_receipt():
+        def confirm_receipt() -> None:
             selected = tree.selection()
             if not selected:
                 messagebox.showwarning("警告", "请先选择一个订单")
                 return
             
             item = tree.item(selected[0])
+            if item is None:
+                return
             order_id = item["values"][0]
             order = self.order_manager.get_order(order_id)
             
@@ -1133,8 +1189,10 @@ class OnlineMallGUI:
         ttk.Button(button_frame, text="查看联系方式", command=view_contact).pack(side=tk.LEFT, padx=10)
         ttk.Button(button_frame, text="确认收货", command=confirm_receipt).pack(side=tk.LEFT, padx=10)
     
-    def contact_seller_dialog(self):
+    def contact_seller_dialog(self) -> None:
         """联系卖家对话框"""
+        if self.current_user is None:
+            return
         # 获取用户有订单的商家列表
         orders = self.order_manager.get_orders_by_customer(self.current_user.user_id)
         merchant_ids = set(order.product_id for order in orders if order.status in ["accepted", "completed"])
@@ -1152,18 +1210,18 @@ class OnlineMallGUI:
         listbox = tk.Listbox(dialog, width=50, height=10)
         listbox.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
         
-        merchant_list = []
+        merchant_list: List[Merchant] = []
         for product_id in merchant_ids:
             product = self.product_manager.get_product(product_id)
             if product:
                 merchant = self.user_manager.get_user_by_id(product.merchant_id)
-                if merchant:
+                if merchant and isinstance(merchant, Merchant):
                     merchant_list.append(merchant)
-                    listbox.insert(tk.END, f"{merchant.username} - {merchant.shop_name}")
+                    listbox.insert(tk.END, f"{merchant.username} - {merchant.shop_name}")  # type: ignore
         
         # 查看联系方式按钮
-        def view_contact():
-            selection = listbox.curselection()
+        def view_contact() -> None:
+            selection = listbox.curselection()  # type: ignore
             if not selection:
                 messagebox.showwarning("警告", "请先选择一个卖家")
                 return
@@ -1173,7 +1231,7 @@ class OnlineMallGUI:
         
         ttk.Button(dialog, text="查看联系方式", command=view_contact).pack(pady=10)
     
-    def get_order_status_text(self, status):
+    def get_order_status_text(self, status: str) -> str:
         """获取订单状态的中文文本"""
         status_map = {
             "pending": "待处理",

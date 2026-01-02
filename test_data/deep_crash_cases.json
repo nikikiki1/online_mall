@@ -1,0 +1,74 @@
+[
+  {
+    "test_function": "test_race_conditions",
+    "exception_type": "RuntimeError",
+    "exception_message": "dictionary changed size during iteration",
+    "test_data": {
+      "concurrent_operation": "update_stock"
+    },
+    "traceback": "NoneType: None\n"
+  },
+  {
+    "test_function": "test_race_conditions",
+    "exception_type": "RuntimeError",
+    "exception_message": "dictionary changed size during iteration",
+    "test_data": {
+      "concurrent_operation": "update_stock"
+    },
+    "traceback": "NoneType: None\n"
+  },
+  {
+    "test_function": "test_race_conditions",
+    "exception_type": "RuntimeError",
+    "exception_message": "dictionary changed size during iteration",
+    "test_data": {
+      "concurrent_operation": "update_stock"
+    },
+    "traceback": "NoneType: None\n"
+  },
+  {
+    "test_function": "test_race_conditions",
+    "exception_type": "RuntimeError",
+    "exception_message": "dictionary changed size during iteration",
+    "test_data": {
+      "concurrent_operation": "update_stock"
+    },
+    "traceback": "NoneType: None\n"
+  },
+  {
+    "test_function": "test_race_conditions",
+    "exception_type": "RuntimeError",
+    "exception_message": "dictionary changed size during iteration",
+    "test_data": {
+      "concurrent_operation": "update_stock"
+    },
+    "traceback": "NoneType: None\n"
+  },
+  {
+    "test_function": "test_direct_memory_access",
+    "exception_type": "AttributeError",
+    "exception_message": "'NoneType' object has no attribute 'product_id'",
+    "test_data": {
+      "direct_memory": "product_modification"
+    },
+    "traceback": "Traceback (most recent call last):\n  File \"/home/wyt/software/online_mall_pre/deep_fuzz_tests.py\", line 345, in test_direct_memory_access\n    product_manager.save_products()\n  File \"/home/wyt/software/online_mall_pre/services/product_manager.py\", line 39, in save_products\n    'product_id': product.product_id,\nAttributeError: 'NoneType' object has no attribute 'product_id'\n"
+  },
+  {
+    "test_function": "test_direct_memory_access",
+    "exception_type": "AttributeError",
+    "exception_message": "'NoneType' object has no attribute 'order_id'",
+    "test_data": {
+      "direct_memory": "order_modification"
+    },
+    "traceback": "Traceback (most recent call last):\n  File \"/home/wyt/software/online_mall_pre/deep_fuzz_tests.py\", line 356, in test_direct_memory_access\n    order_manager.save_orders()\n  File \"/home/wyt/software/online_mall_pre/services/order_manager.py\", line 47, in save_orders\n    'order_id': order.order_id,\nAttributeError: 'NoneType' object has no attribute 'order_id'\n"
+  },
+  {
+    "test_function": "test_direct_memory_access",
+    "exception_type": "AttributeError",
+    "exception_message": "'NoneType' object has no attribute 'user_id'",
+    "test_data": {
+      "direct_memory": "user_modification"
+    },
+    "traceback": "Traceback (most recent call last):\n  File \"/home/wyt/software/online_mall_pre/deep_fuzz_tests.py\", line 367, in test_direct_memory_access\n    user_manager.save_users()\n  File \"/home/wyt/software/online_mall_pre/services/user_manager.py\", line 50, in save_users\n    'user_id': user.user_id,\nAttributeError: 'NoneType' object has no attribute 'user_id'\n"
+  }
+]

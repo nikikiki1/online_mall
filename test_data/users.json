@@ -1,0 +1,11 @@
+[
+  {
+    "user_id": "fixed_user_id",
+    "username": "full_customer_2",
+    "password": "password456",
+    "email": "fullcustomer2@test.com",
+    "role": "customer",
+    "shipping_address": "完整测试地址3",
+    "phone_number": "1380000000002"
+  }
+]

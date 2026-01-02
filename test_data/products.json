@@ -1,0 +1,74 @@
+[
+  {
+    "product_id": "7ba245b1-e3a6-4492-9677-bc7012244f52",
+    "name": "更新后的集成测试商品",
+    "description": "用于集成测试的商品",
+    "price": 199.99,
+    "stock_quantity": 50,
+    "merchant_id": "fixed_user_id",
+    "is_active": true
+  },
+  {
+    "product_id": "c4169802-318f-42c2-b214-cdc77227b83c",
+    "name": "订单测试商品",
+    "description": "用于订单测试的商品",
+    "price": 99.99,
+    "stock_quantity": 95,
+    "merchant_id": "fixed_user_id",
+    "is_active": true
+  },
+  {
+    "product_id": "fd1632e8-4583-42e2-9192-79359eaa78d6",
+    "name": "完整测试商品0_0",
+    "description": "完整流程测试商品1",
+    "price": 50.0,
+    "stock_quantity": 16,
+    "merchant_id": "fixed_user_id",
+    "is_active": true
+  },
+  {
+    "product_id": "71156c98-e1be-41f3-8d44-1936367a7ef1",
+    "name": "完整测试商品0_1",
+    "description": "完整流程测试商品2",
+    "price": 55.0,
+    "stock_quantity": 18,
+    "merchant_id": "fixed_user_id",
+    "is_active": true
+  },
+  {
+    "product_id": "3bcbb015-e5b3-4e83-ba85-1eac878af954",
+    "name": "完整测试商品1_0",
+    "description": "完整流程测试商品1",
+    "price": 60.0,
+    "stock_quantity": 16,
+    "merchant_id": "fixed_user_id",
+    "is_active": true
+  },
+  {
+    "product_id": "4900272d-a0f8-4cec-9b32-b176d76cbbf9",
+    "name": "完整测试商品1_1",
+    "description": "完整流程测试商品2",
+    "price": 65.0,
+    "stock_quantity": 20,
+    "merchant_id": "fixed_user_id",
+    "is_active": true
+  },
+  {
+    "product_id": "a8188d0c-2cf0-474c-b0db-a937620872ad",
+    "name": "完整测试商品2_0",
+    "description": "完整流程测试商品1",
+    "price": 70.0,
+    "stock_quantity": 20,
+    "merchant_id": "fixed_user_id",
+    "is_active": true
+  },
+  {
+    "product_id": "3ec4c276-5ddb-401a-9494-650e764b4bcf",
+    "name": "完整测试商品2_1",
+    "description": "完整流程测试商品2",
+    "price": 75.0,
+    "stock_quantity": 20,
+    "merchant_id": "fixed_user_id",
+    "is_active": true
+  }
+]

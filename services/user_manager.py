@@ -1,51 +1,62 @@
 import json
 import os
+from typing import Dict, List, Optional, Tuple, Any
 from models.user import User, Merchant, Customer
 
 
 class UserManager:
-    def __init__(self, data_file=r"d:\软件工程实验\UML\online_mall\data\users.json"):
-        self.data_file = data_file
-        self.users = {}
+    def __init__(self, data_file: str = None):
+        if data_file is None:
+            # 使用相对路径，确保在不同操作系统上可移植
+            current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            self.data_file: str = os.path.join(current_dir, "data", "users.json")
+        else:
+            self.data_file: str = data_file
+        self.users: Dict[str, User] = {}
         self.load_users()
     
-    def load_users(self):
+    def load_users(self) -> None:
         """从文件加载用户数据"""
         if os.path.exists(self.data_file):
             try:
                 with open(self.data_file, 'r', encoding='utf-8') as f:
-                    users_data = json.load(f)
+                    users_data: List[Dict[str, Any]] = json.load(f)
                     for user_data in users_data:
-                        if user_data.get('role') == 'merchant':
-                            user = Merchant(
-                                user_data['username'],
-                                user_data['password'],
-                                user_data['email'],
-                                user_data['shop_name'],
-                                user_data['contact_info']
-                            )
-                            # 恢复用户ID并同步更新merchant_id
-                            user._user_id = user_data['user_id']
-                            user._merchant_id = user_data['user_id']
-                        else:
-                            user = Customer(
-                                user_data['username'],
-                                user_data['password'],
-                                user_data['email'],
-                                user_data['shipping_address'],
-                                user_data['phone_number']
-                            )
-                            # 恢复用户ID
-                            user._user_id = user_data['user_id']
-                        self.users[user.user_id] = user
-            except:
+                        try:
+                            if user_data.get('role') == 'merchant':
+                                user = Merchant(
+                                    user_data['username'],
+                                    user_data['password'],
+                                    user_data['email'],
+                                    user_data['shop_name'],
+                                    user_data['contact_info']
+                                )
+                                # 恢复用户ID并同步更新merchant_id
+                                user._user_id = user_data['user_id']
+                                user._merchant_id = user_data['user_id']
+                            else:
+                                user = Customer(
+                                    user_data['username'],
+                                    user_data['password'],
+                                    user_data['email'],
+                                    user_data['shipping_address'],
+                                    user_data['phone_number']
+                                )
+                                # 恢复用户ID
+                                user._user_id = user_data['user_id']
+                            self.users[user.user_id] = user
+                        except Exception as e:
+                            print(f"加载用户数据失败: {user_data.get('username', 'Unknown')}, 错误: {e}")
+                            continue
+            except Exception as e:
+                print(f"加载用户数据文件失败: {e}")
                 self.users = {}
     
-    def save_users(self):
+    def save_users(self) -> None:
         """保存用户数据到文件"""
-        users_data = []
+        users_data: List[Dict[str, Any]] = []
         for user in self.users.values():
-            user_dict = {
+            user_dict: Dict[str, Any] = {
                 'user_id': user.user_id,
                 'username': user.username,
                 'password': user._password,  # 实际应用中应加密
@@ -66,7 +77,7 @@ class UserManager:
         with open(self.data_file, 'w', encoding='utf-8') as f:
             json.dump(users_data, f, ensure_ascii=False, indent=2)
     
-    def register_user(self, username, password, email, role, **kwargs):
+    def register_user(self, username: str, password: str, email: str, role: str, **kwargs: Dict[str, Any]) -> Tuple[Optional[User], str]:
         """注册新用户"""
         # 检查用户名是否已存在
         for user in self.users.values():
@@ -94,18 +105,18 @@ class UserManager:
             return user, "注册成功"
         return None, "注册失败"
     
-    def login_user(self, username, password):
+    def login_user(self, username: str, password: str) -> Tuple[Optional[User], str]:
         """用户登录"""
         for user in self.users.values():
             if user.login(username, password):
                 return user, "登录成功"
         return None, "用户名或密码错误"
     
-    def get_user_by_id(self, user_id):
+    def get_user_by_id(self, user_id: str) -> Optional[User]:
         """根据ID获取用户"""
         return self.users.get(user_id)
     
-    def get_user_by_username(self, username):
+    def get_user_by_username(self, username: str) -> Optional[User]:
         """根据用户名获取用户"""
         for user in self.users.values():
             if user.username == username:

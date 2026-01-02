@@ -1,17 +1,21 @@
+from typing import Optional, List, Dict, Any
 from services.user_manager import UserManager
 from services.product_manager import ProductManager
 from services.order_manager import OrderManager
+from models.user import User
+from models.product import Product
+from models.order import Order
 
 
 class OnlineMallApp:
     def __init__(self):
         # 初始化各管理器
-        self.user_manager = UserManager()
-        self.product_manager = ProductManager()
-        self.order_manager = OrderManager(self.product_manager, self.user_manager)
-        self.current_user = None
+        self.user_manager: UserManager = UserManager()
+        self.product_manager: ProductManager = ProductManager()
+        self.order_manager: OrderManager = OrderManager(self.product_manager, self.user_manager)
+        self.current_user: Optional[User] = None
     
-    def display_menu(self):
+    def display_menu(self) -> None:
         """显示主菜单"""
         print("\n======= 网络商场系统 =======")
         if not self.current_user:
@@ -28,7 +32,7 @@ class OnlineMallApp:
             print("0. 退出登录")
         print("===========================")
     
-    def display_merchant_menu(self):
+    def display_merchant_menu(self) -> None:
         """显示商家菜单"""
         print("\n----- 商家功能 -----")
         print("3. 添加商品")
@@ -37,7 +41,7 @@ class OnlineMallApp:
         print("6. 处理订单")
         print("7. 查看库存")
     
-    def display_customer_menu(self):
+    def display_customer_menu(self) -> None:
         """显示顾客菜单"""
         print("\n----- 顾客功能 -----")
         print("3. 浏览商品")
@@ -46,7 +50,7 @@ class OnlineMallApp:
         print("6. 查看订单")
         print("7. 联系卖家")
     
-    def register_user(self):
+    def register_user(self) -> None:
         """用户注册"""
         print("\n----- 用户注册 -----")
         role = input("请选择注册类型 (1: 顾客, 2: 商家): ")
@@ -69,7 +73,7 @@ class OnlineMallApp:
         if user:
             print(f"注册成功！用户ID: {user.user_id}")
     
-    def login_user(self):
+    def login_user(self) -> None:
         """用户登录"""
         print("\n----- 用户登录 -----")
         username = input("请输入用户名: ")
@@ -82,14 +86,14 @@ class OnlineMallApp:
             self.current_user = user
             print(f"登录成功！欢迎回来，{user.username}！")
     
-    def logout_user(self):
+    def logout_user(self) -> None:
         """用户登出"""
         if self.current_user:
             self.current_user.logout()
             self.current_user = None
             print("已成功登出")
     
-    def run(self):
+    def run(self) -> None:
         """运行应用"""
         while True:
             self.display_menu()
@@ -113,7 +117,7 @@ class OnlineMallApp:
                 else:
                     self.handle_customer_actions(choice)
     
-    def handle_merchant_actions(self, choice):
+    def handle_merchant_actions(self, choice: str) -> None:
         """处理商家操作"""
         if choice == '3':
             self.add_product()
@@ -128,7 +132,7 @@ class OnlineMallApp:
         else:
             print("无效的选择，请重试")
     
-    def handle_customer_actions(self, choice):
+    def handle_customer_actions(self, choice: str) -> None:
         """处理顾客操作"""
         if choice == '3':
             self.browse_products()
@@ -144,7 +148,7 @@ class OnlineMallApp:
             print("无效的选择，请重试")
     
     # 商家功能方法
-    def add_product(self):
+    def add_product(self) -> None:
         """添加商品"""
         print("\n----- 添加商品 -----")
         name = input("请输入商品名称: ")
@@ -157,7 +161,7 @@ class OnlineMallApp:
         if product:
             print(f"商品ID: {product.product_id}")
     
-    def manage_products(self):
+    def manage_products(self) -> None:
         """管理商品"""
         print("\n----- 商品管理 -----")
         products = self.current_user.manage_products(self.product_manager)
@@ -182,7 +186,7 @@ class OnlineMallApp:
         except:
             print("请输入有效的数字")
     
-    def product_management_menu(self, product):
+    def product_management_menu(self, product: Product) -> None:
         """商品管理菜单"""
         while True:
             print(f"\n----- 管理商品: {product.name} -----")
@@ -210,7 +214,7 @@ class OnlineMallApp:
             else:
                 print("无效的选择")
     
-    def update_product_info(self, product):
+    def update_product_info(self, product: Product) -> None:
         """更新商品信息"""
         print("\n----- 更新商品信息 -----")
         print("留空表示不修改该字段")
@@ -233,7 +237,7 @@ class OnlineMallApp:
         else:
             print("未做任何修改")
     
-    def view_merchant_orders(self):
+    def view_merchant_orders(self) -> None:
         """查看商家订单"""
         print("\n----- 我的订单 -----")
         orders = self.order_manager.get_orders_by_merchant(self.current_user.merchant_id)
@@ -245,7 +249,7 @@ class OnlineMallApp:
         for i, order in enumerate(orders, 1):
             print(f"\n{i}. {order}")
     
-    def process_merchant_order(self):
+    def process_merchant_order(self) -> None:
         """处理订单"""
         orders = self.order_manager.get_orders_by_merchant(self.current_user.merchant_id)
         pending_orders = [o for o in orders if o.status == 'pending']
@@ -288,7 +292,7 @@ class OnlineMallApp:
         except:
             print("请输入有效的数字")
     
-    def view_inventory(self):
+    def view_inventory(self) -> None:
         """查看库存"""
         print("\n----- 库存查询 -----")
         products = self.current_user.view_inventory(self.product_manager)
@@ -303,7 +307,7 @@ class OnlineMallApp:
             print(f"状态: {'上架' if product.is_active else '下架'}")
     
     # 顾客功能方法
-    def browse_products(self):
+    def browse_products(self) -> None:
         """浏览商品"""
         print("\n----- 商品列表 -----")
         products = self.current_user.browse_products(self.product_manager)
@@ -315,7 +319,7 @@ class OnlineMallApp:
         for i, product in enumerate(products, 1):
             print(f"\n{i}. {product}")
     
-    def search_products(self):
+    def search_products(self) -> None:
         """搜索商品"""
         keyword = input("\n请输入搜索关键词: ")
         products = self.current_user.search_products(self.product_manager, keyword)
@@ -328,7 +332,7 @@ class OnlineMallApp:
         for i, product in enumerate(products, 1):
             print(f"\n{i}. {product}")
     
-    def purchase_product(self):
+    def purchase_product(self) -> None:
         """购买商品"""
         self.browse_products()
         
@@ -357,7 +361,7 @@ class OnlineMallApp:
         except:
             print("请输入有效的数字")
     
-    def view_customer_orders(self):
+    def view_customer_orders(self) -> None:
         """查看顾客订单"""
         print("\n----- 我的订单 -----")
         orders = self.current_user.view_purchases(self.order_manager)
@@ -369,7 +373,7 @@ class OnlineMallApp:
         for i, order in enumerate(orders, 1):
             print(f"\n{i}. {order}")
     
-    def contact_seller(self):
+    def contact_seller(self) -> None:
         """联系卖家"""
         orders = self.current_user.view_purchases(self.order_manager)
         accepted_orders = [o for o in orders if o.status == 'accepted']

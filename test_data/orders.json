@@ -1,0 +1,56 @@
+[
+  {
+    "order_id": "ab3a5425-297f-4fd9-9c4e-1f57e7e37569",
+    "order_date": "2026-01-02 07:57:52",
+    "customer_id": "fixed_user_id",
+    "product_id": "c4169802-318f-42c2-b214-cdc77227b83c",
+    "quantity": 5,
+    "status": "completed",
+    "total_amount": 499.95
+  },
+  {
+    "order_id": "5b970e39-df69-4870-935f-eac12c8158b4",
+    "order_date": "2026-01-02 07:57:52",
+    "customer_id": "fixed_user_id",
+    "product_id": "fd1632e8-4583-42e2-9192-79359eaa78d6",
+    "quantity": 1,
+    "status": "completed",
+    "total_amount": 50.0
+  },
+  {
+    "order_id": "9d69b9c7-b835-4397-9b99-316dfb2cd7a8",
+    "order_date": "2026-01-02 07:57:52",
+    "customer_id": "fixed_user_id",
+    "product_id": "3bcbb015-e5b3-4e83-ba85-1eac878af954",
+    "quantity": 1,
+    "status": "completed",
+    "total_amount": 60.0
+  },
+  {
+    "order_id": "d829eedc-d076-4f61-896d-29f9ab576d05",
+    "order_date": "2026-01-02 07:57:52",
+    "customer_id": "fixed_user_id",
+    "product_id": "71156c98-e1be-41f3-8d44-1936367a7ef1",
+    "quantity": 2,
+    "status": "completed",
+    "total_amount": 110.0
+  },
+  {
+    "order_id": "dd72efbb-4f1a-45c8-a44b-fa012c425cbb",
+    "order_date": "2026-01-02 07:57:52",
+    "customer_id": "fixed_user_id",
+    "product_id": "fd1632e8-4583-42e2-9192-79359eaa78d6",
+    "quantity": 3,
+    "status": "completed",
+    "total_amount": 150.0
+  },
+  {
+    "order_id": "6c4548f1-5f1d-4df6-8c4c-ad0c708f61a9",
+    "order_date": "2026-01-02 07:57:52",
+    "customer_id": "fixed_user_id",
+    "product_id": "3bcbb015-e5b3-4e83-ba85-1eac878af954",
+    "quantity": 3,
+    "status": "completed",
+    "total_amount": 180.0
+  }
+]
